@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            BigInt      @id @default(autoincrement())
+  email         String      @unique
+  password      String
+  name          String
+  phone         String?
+  roles         UserRole[]  
+  contactInfo   String?     @map("contact_info")
+
+  refreshToken  String?     @map("refresh_token")
+
+
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  
+  organizedEvents Event[]   @relation("EventOrganizer")
+  tickets         Ticket[] 
+  eventAttendees  EventAttendee[]
+}
+
+enum UserRole {
+  ATTENDEE
+  ORGANIZER
+  ADMIN
+}
+
+model Venue {
+  id       BigInt  @id @default(autoincrement())
+  name     String
+  address  String
+  capacity Int
+  events   Event[]
+}
+
+model Event {
+  id           BigInt    @id @default(autoincrement())
+  name         String
+  description  String?
+  date         DateTime  @db.Timestamptz
+  venueId      BigInt?   @map("venue_id")
+  organizerId  BigInt    @map("organizer_id")
+  venue        Venue?    @relation(fields: [venueId], references: [id])
+  organizer    User      @relation("EventOrganizer", fields: [organizerId], references: [id])
+  attendees    EventAttendee[]
+  tickets      Ticket[]
+}
+
+model EventAttendee {
+  id         BigInt    @id @default(autoincrement())
+  eventId    BigInt    @map("event_id")
+  userId     BigInt    @map("user_id")
+  event      Event     @relation(fields: [eventId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
+}
+
+model Ticket {
+  id           BigInt    @id @default(autoincrement())
+  eventId      BigInt    @map("event_id")
+  userId       BigInt    @map("user_id")
+  ticketType   String    @map("ticket_type")
+  price        Decimal   @db.Decimal(10, 2)
+  purchaseDate DateTime  @default(now()) @map("purchase_date") @db.Timestamptz
+  event        Event     @relation(fields: [eventId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+}
