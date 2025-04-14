@@ -6,38 +6,34 @@ import prisma from "../utils/prisma";
 
 
 export const verifyToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-
     try {
-
         const token = req.cookies?.accessToken || req.headers.authorization?.split(" ")[1]
 
         if (!token) {
             throw new ApiError(401, "Unauthorized")
         }
 
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as {id:string}
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
 
         const user = await prisma.user.findUnique({
-            where:{
-                id:decoded.id
+            where: {
+                id: decoded.userId
             },
-            select:{
-                id:true,
-                roles:true,
-                email:true,
-                name:true,
+            select: {
+                id: true,
+                roles: true,
+                email: true,
+                name: true,
             }
         })
 
-        if(!user){
+        if (!user) {
             throw new ApiError(401, "Invalid token")
-            }
+        }
 
-            req.user=user
-            next()
-        
-        
+        req.user = user
+        next()
     } catch (error) {
-        
+        next(error)
     }
 }
