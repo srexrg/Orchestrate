@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { register, login } from '../services/auth.service';
+import { register, login, refreshToken } from '../services/auth.service';
 import ApiResponse from '../utils/ApiResponse';
 import ApiError from '../utils/ApiError';
 
@@ -73,5 +73,23 @@ export const loginUser = async (req: Request, res: Response): Promise<any> => {
             throw error;
         }
         throw new ApiError(500, "Internal Server Error");
+    }
+}
+
+export const refreshTokenHandler = async (req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            throw new ApiError(401, "No refresh token provided");
+        }
+
+        const result = await refreshToken(token);
+        res.status(200).json(result);
+    } catch (error) {
+        if (error instanceof ApiError) {
+            res.status(error.statusCode).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: 'Internal server error' });
+        }
     }
 }
