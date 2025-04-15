@@ -1,5 +1,5 @@
 import prisma from '../utils/prisma';
-import { CreateEventInput, UpdateEventInput, CreateVenueInput, CreateTicketInput } from '../interfaces/event';
+import { CreateEventInput, UpdateEventInput, CreateTicketInput } from '../interfaces/event';
 import ApiError from '../utils/ApiError';
 
 const checkVenueExists = async (venueId: string) => {
@@ -122,17 +122,6 @@ export const deleteEvent = async (id: string) => {
         return { message: "Event deleted successfully" };
     } catch (error) {
         throw new ApiError(500, "Error deleting event");
-    }
-};
-
-export const createVenue = async (input: CreateVenueInput) => {
-    try {
-        const venue = await prisma.venue.create({
-            data: input
-        });
-        return venue;
-    } catch (error) {
-        throw new ApiError(500, "Error creating venue");
     }
 };
 

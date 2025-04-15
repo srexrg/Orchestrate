@@ -5,7 +5,6 @@ import {
     getEventById,
     updateEvent,
     deleteEvent,
-    createVenue,
     createTicket,
     getEventsByOrganizer
 } from '../services/event.service';
@@ -85,28 +84,6 @@ export const deleteEventHandler = async (req: AuthenticatedRequest, res: Respons
     }
 };
 
-export const createVenueHandler = async (req: Request, res: Response): Promise<any> => {
-    try {
-        const { name, address, capacity } = req.body;
-
-        if (!name || !address || !capacity) {
-            throw new ApiError(400, "Missing required fields");
-        }
-
-        const venue = await createVenue({
-            name,
-            address,
-            capacity: Number(capacity)
-        });
-
-        return res.status(201).json(
-            new ApiResponse(201, venue, "Venue created successfully")
-        );
-    } catch (error) {
-        if (error instanceof ApiError) throw error;
-        throw new ApiError(500, "Internal Server Error");
-    }
-};
 
 export const createTicketHandler = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
