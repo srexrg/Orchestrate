@@ -1,11 +1,11 @@
-import { NextFunction } from "express";
+import { NextFunction, Response } from "express";
 import ApiError from "../utils/ApiError";
 import { AuthenticatedRequest } from "../interfaces/auth";
 import jwt from "jsonwebtoken";
 import prisma from "../utils/prisma";
 
 
-export const verifyToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const verifyToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<any> => {
     try {
         const token = req.cookies?.accessToken || req.headers.authorization?.split(" ")[1]
 
