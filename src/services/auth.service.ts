@@ -8,16 +8,16 @@ const isValidRole = (role: string): role is UserRole => {
     return Object.values(UserRole).includes(role as UserRole)
 }
 
-const generateTokens = async (userId: string) => {
+const generateTokens = async (userId: string, roles: UserRole[]) => {
     try {
         const accessToken = jwt.sign(
-            { userId },
+            { userId, roles },
             process.env.JWT_SECRET!,
             { expiresIn: '1d' }
         )
 
         const refreshToken = jwt.sign(
-            { userId },
+            { userId, roles },
             process.env.JWT_REFRESH_SECRET!,
             { expiresIn: '7d' }
         )
@@ -73,7 +73,7 @@ export const register = async ({
         }
     })
 
-    const { accessToken, refreshToken } = await generateTokens(user.id)
+    const { accessToken, refreshToken } = await generateTokens(user.id, user.roles as UserRole[])
 
     return {
         user,
@@ -100,7 +100,7 @@ export const login = async ({
         throw new ApiError(401, "Invalid credentials")
     }
 
-    const { accessToken, refreshToken } = await generateTokens(user.id)
+    const { accessToken, refreshToken } = await generateTokens(user.id, user.roles as UserRole[])
 
     return {
         user: {
@@ -111,5 +111,45 @@ export const login = async ({
         },
         accessToken,
         refreshToken
+    }
+}
+
+export const refreshToken = async (refreshToken: string) => {
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as {
+            userId: string
+            roles: UserRole[]
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { 
+                id: decoded.userId,
+                refreshToken 
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                roles: true
+            }
+        })
+
+        if (!user) {
+            throw new ApiError(401, "Invalid refresh token")
+        }
+
+
+        const { accessToken, refreshToken: newRefreshToken } = await generateTokens(user.id, user.roles as UserRole[])
+
+        return {
+            user,
+            accessToken,
+            refreshToken: newRefreshToken
+        }
+    } catch (error) {
+        if (error instanceof jwt.JsonWebTokenError) {
+            throw new ApiError(401, "Invalid refresh token")
+        }
+        throw error
     }
 }
