@@ -153,3 +153,14 @@ export const refreshToken = async (refreshToken: string) => {
         throw error
     }
 }
+
+export const logout = async (userId: string) => {
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { refreshToken: null }
+        })
+    } catch (error) {
+        throw new ApiError(500, "Error during logout")
+    }
+}
