@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { register, login, refreshToken } from '../services/auth.service';
+import { register, login, refreshToken, logout } from '../services/auth.service';
 import ApiResponse from '../utils/ApiResponse';
 import ApiError from '../utils/ApiError';
+import { AuthenticatedRequest } from '../interfaces/auth';
 
 export const registerUser = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -90,6 +91,33 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
             res.status(error.statusCode).json({ message: error.message });
         } else {
             res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+}
+
+export const logoutUser = async (req: AuthenticatedRequest, res: Response):Promise<any> => {
+    try {
+        if (!req.user?.id) {
+            throw new ApiError(401, "User not authenticated")
+        }
+
+        await logout(req.user.id)
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        return res
+            .status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json(new ApiResponse(200, {}, "User logged out successfully"))
+    } catch (error) {
+        if (error instanceof ApiError) {
+            res.status(error.statusCode).json({ message: error.message })
+        } else {
+            res.status(500).json({ message: 'Internal server error' })
         }
     }
 }
