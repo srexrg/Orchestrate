@@ -1,0 +1,175 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - AUTH_SERVICE_URL=http://locahost:3001
+      - EVENT_SERVICE_URL=http://locahost:3002
+      - VENUE_SERVICE_URL=http://locahost:3003
+      - ATTENDEE_SERVICE_URL=http://locahost:3004
+    depends_on:
+      - auth-service
+      - event-service
+      - venue-service
+      - attendee-service
+    networks:
+      - orchestrate-network
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DATABASE_URL=postgresql://postgres:postgres@auth-db:5432/auth
+      - JWT_SECRET=hfkesahr3q489345iueiourt
+      - JWT_REFRESH_SECRET=kojwreh389589357
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - orchestrate-network
+
+  event-service:
+    build:
+      context: ./services/event-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - DATABASE_URL=postgresql://postgres:postgres@event-db:5432/events
+    depends_on:
+      event-db:
+        condition: service_healthy
+    networks:
+      - orchestrate-network
+
+  venue-service:
+    build:
+      context: ./services/venue-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DATABASE_URL=postgresql://postgres:postgres@venue-db:5432/venues
+    depends_on:
+      venue-db:
+        condition: service_healthy
+    networks:
+      - orchestrate-network
+
+  attendee-service:
+    build:
+      context: ./services/attendee-service
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - DATABASE_URL=postgresql://postgres:postgres@attendee-db:5432/attendees
+    depends_on:
+      attendee-db:
+        condition: service_healthy
+    networks:
+      - orchestrate-network
+
+  # Databases
+  auth-db:
+    image: postgres:14
+    container_name: auth-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth
+    ports:
+      - "5433:5432"  # Expose for local development
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - orchestrate-network
+
+  event-db:
+    image: postgres:14
+    container_name: event-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=events
+    ports:
+      - "5434:5432"  # Expose for local development
+    volumes:
+      - event-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d events"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - orchestrate-network
+
+  venue-db:
+    image: postgres:14
+    container_name: venue-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=venues
+    ports:
+      - "5435:5432"  # Expose for local development
+    volumes:
+      - venue-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d venues"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - orchestrate-network
+
+  attendee-db:
+    image: postgres:14
+    container_name: attendee-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=attendees
+    ports:
+      - "5436:5432"  # Expose for local development
+    volumes:
+      - attendee-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d attendees"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - orchestrate-network
+
+volumes:
+  auth-data:
+  event-data:
+  venue-data:
+  attendee-data:
+
+networks:
+  orchestrate-network:
+    driver: bridge

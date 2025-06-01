@@ -1,0 +1,17 @@
+{
+  "name": "@orchestrate/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for Orchestrate microservices",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0"
+  }
+} 
