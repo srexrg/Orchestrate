@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { register, login, refreshToken, logout } from '../services/auth.service';
-import { ApiResponse, ApiError } from '@orchestrate/shared';
-import { AuthenticatedRequest } from '../interfaces/auth';
+import { ApiResponse, ApiError,AuthenticatedRequest } from '@orchestrate/shared';
 
 export const registerUser = async (req: Request, res: Response): Promise<any> => {
     try {

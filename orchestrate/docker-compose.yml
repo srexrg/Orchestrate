@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api-gateway:
     build:
@@ -9,10 +7,10 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - AUTH_SERVICE_URL=http://locahost:3001
-      - EVENT_SERVICE_URL=http://locahost:3002
-      - VENUE_SERVICE_URL=http://locahost:3003
-      - ATTENDEE_SERVICE_URL=http://locahost:3004
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - EVENT_SERVICE_URL=http://event-service:3002
+      - VENUE_SERVICE_URL=http://venue-service:3003
+      - ATTENDEE_SERVICE_URL=http://attendee-service:3004
     depends_on:
       - auth-service
       - event-service
@@ -115,7 +113,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=events
     ports:
-      - "5434:5432"  # Expose for local development
+      - "5434:5432" 
     volumes:
       - event-data:/var/lib/postgresql/data
     healthcheck:

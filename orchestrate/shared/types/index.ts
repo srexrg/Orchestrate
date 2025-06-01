@@ -37,20 +37,30 @@ export class ApiResponse {
     }
 }
 
-// Export interfaces (add more as needed)
 export interface CreateEventInput {
-    name: string;
-    description?: string;
-    date: Date;
-    venueId?: string;
-    organizerId: string;
+  title: string;           
+  description: string;
+  date: Date;
+  venueId: string;
+  organizerId: string;
+  capacity: number;
+  price: number;
 }
 
 export interface UpdateEventInput {
-    name?: string;
-    description?: string;
-    date?: Date;
-    venueId?: string;
+  title?: string;
+  description?: string;
+  date?: Date;
+  venueId?: string;
+  capacity?: number;
+  price?: number;
+}
+
+export interface CreateTicketInput {
+  eventId: string;
+  userId: string;
+  ticketType: string;
+  price: number;
 }
 
 export interface CreateVenueInput {
@@ -59,9 +69,18 @@ export interface CreateVenueInput {
     capacity: number;
 }
 
-export interface CreateTicketInput {
-    eventId: string;
-    userId: string;
-    ticketType: string;
-    price: number;
+
+export enum UserRole {
+  ATTENDEE = 'ATTENDEE',
+  ORGANIZER = 'ORGANIZER',
+  ADMIN = 'ADMIN'
+}
+
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    roles: UserRole[];
+    email: string;
+    name: string;
+  };
 }
