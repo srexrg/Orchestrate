@@ -4,7 +4,7 @@ import {
   ApiError,
   RegisterAttendeeInput,
   AttendeeStatus,
-} from "@orchestrate/shared";
+} from "orchestrate-shared";
 
 const generateTicketNumber = (): string => {
   return `TKT-${Date.now()}-${Math.random()

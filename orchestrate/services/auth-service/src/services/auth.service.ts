@@ -2,7 +2,7 @@ import prisma from '../utils/prisma'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { UserRole } from '@prisma/client'
-import  {ApiError} from '@orchestrate/shared';
+import  {ApiError} from 'orchestrate-shared';
 
 
 

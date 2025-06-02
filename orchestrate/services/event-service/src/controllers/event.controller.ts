@@ -8,7 +8,7 @@ import {
   checkVenueAvailability,
   getRegistrationAvailability,
 } from "../services/event.service";
-import { ApiResponse, ApiError } from "@orchestrate/shared";
+import { ApiResponse, ApiError } from "orchestrate-shared";
 
 export interface AuthenticatedRequest extends Request {
   user?: {

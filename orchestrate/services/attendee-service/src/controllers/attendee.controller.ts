@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AuthenticatedRequest, ApiResponse, ApiError } from '@orchestrate/shared';
+import { AuthenticatedRequest, ApiResponse, ApiError } from 'orchestrate-shared';
 import {
     registerAttendee,
     getEventAttendees,

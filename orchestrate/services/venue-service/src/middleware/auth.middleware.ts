@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
-import { AuthenticatedRequest, ApiError, UserRole } from '@orchestrate/shared'
+import { AuthenticatedRequest, ApiError, UserRole } from 'orchestrate-shared'
 
 export const verifyToken = async (
     req: AuthenticatedRequest,

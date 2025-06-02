@@ -7,7 +7,7 @@ import {
     getAllVenues,
     getAvailableVenues
 } from '../services/venue.service';
-import {ApiResponse,ApiError,AuthenticatedRequest} from '@orchestrate/shared';
+import {ApiResponse,ApiError,AuthenticatedRequest} from 'orchestrate-shared';
 
 
 export const createVenueHandler = async (req: Request, res: Response): Promise<any> => {

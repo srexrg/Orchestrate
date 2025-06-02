@@ -4,7 +4,7 @@ import {
   CreateEventInput,
   UpdateEventInput,
   ApiError,
-} from "@orchestrate/shared";
+} from "orchestrate-shared";
 
 // Helper function to check if venue exists and has sufficient capacity
 const validateVenue = async (

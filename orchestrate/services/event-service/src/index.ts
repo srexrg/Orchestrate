@@ -14,13 +14,14 @@ app.use(cors())
 app.use(express.json())
 app.use(cookieParser())
 
-// Routes
-app.use('/', eventRoutes);
-
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+app.use('/', eventRoutes);
+
+
 
 
 

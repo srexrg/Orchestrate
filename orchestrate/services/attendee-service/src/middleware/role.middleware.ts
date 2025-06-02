@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { AuthenticatedRequest,ApiError,UserRole} from "@orchestrate/shared";
+import { AuthenticatedRequest,ApiError,UserRole} from "orchestrate-shared";
 
 export const checkRole = (roles: string[]) => {
     return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

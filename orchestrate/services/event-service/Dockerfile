@@ -1,13 +1,17 @@
 FROM node:18-alpine
 
+
+
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Clear npm cache and install dependencies
-RUN npm install
+# Clear npm cache and install dependencies with clean slate
+RUN npm cache clean --force && \
+    rm -rf node_modules package-lock.json && \
+    npm install 
 
 # Copy source code
 COPY . .

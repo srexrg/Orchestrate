@@ -4,7 +4,7 @@ import {
   ApiError,
   CreateVenueInput,
   UpdateVenueInput,
-} from "@orchestrate/shared";
+} from "orchestrate-shared";
 
 export const createVenue = async (input: CreateVenueInput) => {
   try {
