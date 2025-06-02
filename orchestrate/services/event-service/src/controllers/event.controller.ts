@@ -6,6 +6,7 @@ import {
   deleteEvent,
   getEventsByOrganizer,
   checkVenueAvailability,
+  getRegistrationAvailability,
 } from "../services/event.service";
 import { ApiResponse, ApiError } from "@orchestrate/shared";
 
@@ -184,6 +185,26 @@ export const checkVenueAvailabilityHandler = async (
       .status(200)
       .json(
         new ApiResponse(200, availabilityData, "Venue availability checked successfully")
+      );
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Internal Server Error");
+  }
+};
+
+export const checkRegistrationAvailabilityHandler = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { id } = req.params;
+
+    const availability = await getRegistrationAvailability(id);
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, availability, "Registration availability checked successfully")
       );
   } catch (error) {
     if (error instanceof ApiError) throw error;

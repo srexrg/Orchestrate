@@ -6,6 +6,7 @@ import {
     getUserEvents,
     cancelRegistration,
     checkRegistrationStatus,
+    getRegistrationAvailability,
 } from '../services/attendee.service';
 
 export const registerAttendeeHandler = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
@@ -92,6 +93,20 @@ export const checkRegistrationStatusHandler = async (req: AuthenticatedRequest, 
         const status = await checkRegistrationStatus(eventId, userId);
         return res.status(200).json(
             new ApiResponse(200, status, "Registration status retrieved successfully")
+        );
+    } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(500, "Internal Server Error");
+    }
+};
+
+export const checkRegistrationAvailabilityHandler = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { eventId } = req.params;
+
+        const availability = await getRegistrationAvailability(eventId);
+        return res.status(200).json(
+            new ApiResponse(200, availability, "Registration availability retrieved successfully")
         );
     } catch (error) {
         if (error instanceof ApiError) throw error;

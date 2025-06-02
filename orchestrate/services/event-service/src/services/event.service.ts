@@ -213,3 +213,54 @@ export const checkVenueAvailability = async (
     throw new ApiError(500, "Error checking venue availability");
   }
 };
+
+export const getRegistrationAvailability = async (eventId: string) => {
+  try {
+    // Get event details
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+    });
+
+    if (!event) {
+      throw new ApiError(404, "Event not found");
+    }
+
+    // Check if event date has passed
+    const now = new Date();
+    if (event.date < now) {
+      return {
+        available: false,
+        reason: "Event has already passed",
+        currentRegistrations: 0,
+        maxCapacity: event.capacity,
+        remainingSpots: 0
+      };
+    }
+
+    // Get current registration count from attendee service
+    let currentRegistrations = 0;
+    try {
+      const attendeeServiceUrl = process.env.ATTENDEE_SERVICE_URL || "http://localhost:3002";
+      const response = await axios.get(`${attendeeServiceUrl}/event/${eventId}`);
+      currentRegistrations = response.data.data?.length || 0;
+    } catch (error) {
+      // If attendee service is unavailable, we can't get accurate count
+      // but we can still allow registration if event is valid
+      console.warn("Could not fetch attendee count from attendee service");
+    }
+
+    const remainingSpots = event.capacity - currentRegistrations;
+    const available = remainingSpots > 0;
+
+    return {
+      available,
+      reason: available ? "Registration open" : "Event is full",
+      currentRegistrations,
+      maxCapacity: event.capacity,
+      remainingSpots: Math.max(0, remainingSpots)
+    };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Error checking registration availability");
+  }
+};

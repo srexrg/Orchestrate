@@ -6,7 +6,8 @@ import {
     getEventAttendeesHandler,
     getUserEventsHandler,
     cancelRegistrationHandler,
-    checkRegistrationStatusHandler
+    checkRegistrationStatusHandler,
+    checkRegistrationAvailabilityHandler
 } from '../controllers/attendee.controller';
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.post('/register', checkRole(['ATTENDEE']), registerAttendeeHandler);
 router.get('/user/events', checkRole(['ATTENDEE']), getUserEventsHandler);
 router.delete('/event/:eventId', checkRole(['ATTENDEE']), cancelRegistrationHandler);
 router.get('/event/:eventId/status', checkRole(['ATTENDEE']), checkRegistrationStatusHandler);
+router.get('/event/:eventId/availability', checkRegistrationAvailabilityHandler);
 
 export default router; 

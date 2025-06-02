@@ -1,4 +1,5 @@
 import prisma from "../utils/prisma";
+import axios from "axios";
 import {
   ApiError,
   RegisterAttendeeInput,
@@ -12,11 +13,56 @@ const generateTicketNumber = (): string => {
     .toUpperCase()}`;
 };
 
+const validateEvent = async (eventId: string): Promise<any> => {
+  try {
+    const eventServiceUrl =
+      process.env.EVENT_SERVICE_URL || "http://localhost:3001";
+    const response = await axios.get(
+      `${eventServiceUrl}/api/events/${eventId}`
+    );
+    return response.data.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      throw new ApiError(404, "Event not found");
+    }
+    if (error.code === "ECONNREFUSED") {
+      throw new ApiError(503, "Event service unavailable");
+    }
+    throw new ApiError(500, "Failed to validate event");
+  }
+};
+
+const checkRegistrationAvailability = async (
+  eventId: string
+): Promise<boolean> => {
+  try {
+    const eventServiceUrl =
+      process.env.EVENT_SERVICE_URL || "http://localhost:3001";
+    const response = await axios.get(
+      `${eventServiceUrl}/api/events/${eventId}/registration-availability`
+    );
+    return response.data.data.available;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      throw new ApiError(404, "Event not found");
+    }
+    if (error.code === "ECONNREFUSED") {
+      throw new ApiError(503, "Event service unavailable");
+    }
+    throw new ApiError(500, "Failed to check registration availability");
+  }
+};
+
 export const registerAttendee = async (input: RegisterAttendeeInput) => {
   try {
-    // In microservices, we don't validate event/user existence here
-    // That validation should happen at the API Gateway or client level
-    // We trust that valid eventId and userId are provided
+    // Validate event exists and is active
+    await validateEvent(input.eventId);
+
+    // Check if event registration is still available
+    const isAvailable = await checkRegistrationAvailability(input.eventId);
+    if (!isAvailable) {
+      throw new ApiError(400, "Event registration is full or closed");
+    }
 
     const existingRegistration = await prisma.attendee.findFirst({
       where: {
@@ -153,5 +199,35 @@ export const getAttendeeByTicket = async (ticketNumber: string) => {
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError(500, "Failed to fetch attendee by ticket");
+  }
+};
+
+export const getRegistrationAvailability = async (eventId: string) => {
+  try {
+    // Validate event exists
+    const event = await validateEvent(eventId);
+
+    const isAvailable = await checkRegistrationAvailability(eventId);
+
+    const currentRegistrations = await prisma.attendee.count({
+      where: {
+        eventId,
+        status: {
+          in: [AttendeeStatus.REGISTERED, AttendeeStatus.ATTENDED],
+        },
+      },
+    });
+
+    return {
+      available: isAvailable,
+      currentRegistrations,
+      maxCapacity: event.maxAttendees || 0,
+      remainingSpots: event.maxAttendees
+        ? event.maxAttendees - currentRegistrations
+        : null,
+    };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Failed to check registration availability");
   }
 };
