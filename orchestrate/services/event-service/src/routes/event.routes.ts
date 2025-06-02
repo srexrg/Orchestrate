@@ -4,16 +4,19 @@ import {
     getEventByIdHandler,
     updateEventHandler,
     deleteEventHandler,
-    getOrganizerEventsHandler
+    getOrganizerEventsHandler,
+    checkVenueAvailabilityHandler
 } from '../controllers/event.controller';
 import { verifyToken } from '../middleware/auth.middleware';
 import { checkRole } from '../middleware/role.middleware';
 
 const router = express.Router();
 
+// Public routes
+router.post('/venue-availability', checkVenueAvailabilityHandler);
 router.get('/:id', getEventByIdHandler);
 
-
+// Protected routes
 router.use(verifyToken);
 
 

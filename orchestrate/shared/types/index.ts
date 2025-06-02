@@ -89,6 +89,28 @@ export enum UserRole {
   ADMIN = 'ADMIN'
 }
 
+export enum AttendeeStatus {
+  REGISTERED = 'REGISTERED',
+  ATTENDED = 'ATTENDED',
+  CANCELLED = 'CANCELLED',
+  REFUNDED = 'REFUNDED'
+}
+
+export interface RegisterAttendeeInput {
+  eventId: string;
+  userId: string;
+}
+
+export interface AttendeeInfo {
+  id: string;
+  userId: string;
+  eventId: string;
+  status: AttendeeStatus;
+  ticketNumber: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;

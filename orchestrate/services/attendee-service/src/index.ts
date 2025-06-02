@@ -2,12 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import venueRoutes from './routes/venue.routes';
+import attendeeRoutes from './routes/attendee.routes';
 
 dotenv.config({ path: ".env" })
 
 const app = express();
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3001;
 
 
 app.use(cors())
@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 // Routes
-app.use('/', venueRoutes);
+app.use('/', attendeeRoutes);
 
 
 app.get('/health', (req, res) => {
@@ -25,5 +25,5 @@ app.get('/health', (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Venue Service running on port ${PORT}`);
+  console.log(`Attendee Service running on port ${PORT}`);
 });

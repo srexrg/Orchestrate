@@ -95,12 +95,16 @@ export const getAvailableVenuesHandler = async (req: Request, res: Response): Pr
     try {
         const { date, capacity } = req.query;
 
-        if (!date || !capacity) {
-            throw new ApiError(400, "Missing required query parameters");
+        if (!capacity || !date) {
+            throw new ApiError(400, "Missing required capacity parameter");
         }
+        
+        const capacityValue = parseInt(capacity as string);
+    
 
         const venues = await getAvailableVenues(
-            parseInt(capacity as string)
+            capacityValue,
+            new Date(date as string)  
         );
 
         return res.status(200).json(

@@ -25,5 +25,5 @@ app.get('/health', (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Auth Service running on port ${PORT}`);
+  console.log(`Event Service running on port ${PORT}`);
 });

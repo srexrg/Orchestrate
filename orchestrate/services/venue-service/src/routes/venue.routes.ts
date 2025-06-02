@@ -14,8 +14,8 @@ const router = express.Router();
 
 
 router.get('/', getAllVenuesHandler);
-router.get('/:id', getVenueByIdHandler);
 router.get('/available', getAvailableVenuesHandler);
+router.get('/:id', getVenueByIdHandler);
 
 router.use(verifyToken);
 

@@ -5,6 +5,7 @@ import {
   updateEvent,
   deleteEvent,
   getEventsByOrganizer,
+  checkVenueAvailability,
 } from "../services/event.service";
 import { ApiResponse, ApiError } from "@orchestrate/shared";
 
@@ -78,14 +79,25 @@ export const updateEventHandler = async (
 ): Promise<any> => {
   try {
     const { id } = req.params;
-    const { title, description, date, venueId } = req.body;
+    const { title, description, date, venueId, capacity, price } = req.body;
+    const organizerId = req.user?.id;
 
-    const event = await updateEvent(id, {
-      title,
-      description,
-      date: date ? new Date(date) : undefined,
-      venueId,
-    });
+    if (!organizerId) {
+      throw new ApiError(401, "Authentication required");
+    }
+
+    const event = await updateEvent(
+      id,
+      {
+        title,
+        description,
+        date: date ? new Date(date) : undefined,
+        venueId,
+        capacity,
+        price,
+      },
+      organizerId
+    );
 
     return res
       .status(200)
@@ -102,7 +114,13 @@ export const deleteEventHandler = async (
 ): Promise<any> => {
   try {
     const { id } = req.params;
-    const result = await deleteEvent(id);
+    const organizerId = req.user?.id;
+
+    if (!organizerId) {
+      throw new ApiError(401, "Authentication required");
+    }
+
+    const result = await deleteEvent(id, organizerId);
     return res
       .status(200)
       .json(new ApiResponse(200, result, "Event deleted successfully"));
@@ -131,6 +149,41 @@ export const getOrganizerEventsHandler = async (
           events,
           "Organizer's events retrieved successfully"
         )
+      );
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Internal Server Error");
+  }
+};
+
+export const checkVenueAvailabilityHandler = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { venueIds, date } = req.body;
+
+
+    if (!venueIds || !Array.isArray(venueIds) || venueIds.length === 0) {
+      throw new ApiError(400, "venueIds must be a non-empty array");
+    }
+
+    if (!date) {
+      throw new ApiError(400, "date is required");
+    }
+
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      throw new ApiError(400, "Invalid date format");
+    }
+
+    // Check venue availability
+    const availabilityData = await checkVenueAvailability(venueIds, dateObj);
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, availabilityData, "Venue availability checked successfully")
       );
   } catch (error) {
     if (error instanceof ApiError) throw error;
