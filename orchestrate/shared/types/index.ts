@@ -1,4 +1,5 @@
-// Export utilities
+import { Request } from 'express';
+
 export class ApiError extends Error {
     statusCode: number;
     success: boolean;
@@ -67,6 +68,18 @@ export interface CreateVenueInput {
     name: string;
     address: string;
     capacity: number;
+}
+
+export interface UpdateVenueInput {
+    name?: string;
+    address?: string;
+    capacity?: number;
+}
+
+export enum VenueStatus {
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE',
+    MAINTENANCE = 'MAINTENANCE'
 }
 
 

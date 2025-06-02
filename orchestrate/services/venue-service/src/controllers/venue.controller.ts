@@ -7,8 +7,8 @@ import {
     getAllVenues,
     getAvailableVenues
 } from '../services/venue.service';
-import ApiResponse from '../utils/ApiResponse';
-import ApiError from '../utils/ApiError';
+import {ApiResponse,ApiError,AuthenticatedRequest} from '@orchestrate/shared';
+
 
 export const createVenueHandler = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -100,7 +100,6 @@ export const getAvailableVenuesHandler = async (req: Request, res: Response): Pr
         }
 
         const venues = await getAvailableVenues(
-            new Date(date as string),
             parseInt(capacity as string)
         );
 
