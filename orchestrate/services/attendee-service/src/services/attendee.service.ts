@@ -16,9 +16,9 @@ const generateTicketNumber = (): string => {
 const validateEvent = async (eventId: string): Promise<any> => {
   try {
     const eventServiceUrl =
-      process.env.EVENT_SERVICE_URL || "http://localhost:3001";
+      process.env.EVENT_SERVICE_URL || "http://event-service:3002";
     const response = await axios.get(
-      `${eventServiceUrl}/api/events/${eventId}`
+      `${eventServiceUrl}/${eventId}`
     );
     return response.data.data;
   } catch (error: any) {
@@ -37,9 +37,9 @@ const checkRegistrationAvailability = async (
 ): Promise<boolean> => {
   try {
     const eventServiceUrl =
-      process.env.EVENT_SERVICE_URL || "http://localhost:3001";
+      process.env.EVENT_SERVICE_URL || "http://event-service:3002";
     const response = await axios.get(
-      `${eventServiceUrl}/api/events/${eventId}/registration-availability`
+      `${eventServiceUrl}/${eventId}/registration-availability`
     );
     return response.data.data.available;
   } catch (error: any) {

@@ -13,10 +13,11 @@ const validateVenue = async (
 ): Promise<boolean> => {
   try {
     // Get venue service URL from environment or use default
+    // In Docker Compose, use service name instead of localhost
     const venueServiceUrl =
-      process.env.VENUE_SERVICE_URL || "http://localhost:3003";
+      process.env.VENUE_SERVICE_URL || "http://venue-service:3003";
 
-    // Make API call to venue service
+    // Make API call to venue service (no /api/venues prefix needed)
     const response = await axios.get(`${venueServiceUrl}/${venueId}`);
     const venue = response.data.data;
 

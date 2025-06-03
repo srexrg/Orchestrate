@@ -47,6 +47,7 @@ services:
       - NODE_ENV=development
       - PORT=3002
       - DATABASE_URL=postgresql://postgres:postgres@event-db:5432/events
+      - JWT_SECRET=hfkesahr3q489345iueiourt
     depends_on:
       event-db:
         condition: service_healthy
@@ -63,6 +64,7 @@ services:
       - NODE_ENV=development
       - PORT=3003
       - DATABASE_URL=postgresql://postgres:postgres@venue-db:5432/venues
+      - JWT_SECRET=hfkesahr3q489345iueiourt
     depends_on:
       venue-db:
         condition: service_healthy
@@ -79,6 +81,7 @@ services:
       - NODE_ENV=development
       - PORT=3004
       - DATABASE_URL=postgresql://postgres:postgres@attendee-db:5432/attendees
+      - JWT_SECRET=hfkesahr3q489345iueiourt
     depends_on:
       attendee-db:
         condition: service_healthy
