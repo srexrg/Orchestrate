@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm install
+        cd shared && npm install && npm run build
+
+    - name: Build services
+      run: |
+        echo "Building all services..."
+        cd services/auth-service && npm install && npm run build
+        cd ../event-service && npm install && npm run build
+        cd ../venue-service && npm install && npm run build
+        cd ../attendee-service && npm install && npm run build
+        cd ../api-gateway && npm install && npm run build
+
+    - name: Build Docker images
+      run: |
+        echo "Building Docker images..."
+        docker-compose build
+
+    - name: Test services
+      run: |
+        echo "Starting services..."
+        docker-compose up -d
+        sleep 30
+        
+        echo "Testing service health..."
+        chmod +x ./check-services.sh
+        ./check-services.sh
+        
+        echo "Cleanup..."
+        docker-compose down
