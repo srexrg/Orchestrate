@@ -37,12 +37,12 @@ jobs:
     - name: Build Docker images
       run: |
         echo "Building Docker images..."
-        docker-compose build
+        docker compose build
 
     - name: Test services
       run: |
         echo "Starting services..."
-        docker-compose up -d
+        docker compose up -d
         sleep 30
         
         echo "Testing service health..."
@@ -50,4 +50,4 @@ jobs:
         ./check-services.sh
         
         echo "Cleanup..."
-        docker-compose down
+        docker compose down
