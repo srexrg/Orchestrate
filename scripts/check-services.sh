@@ -8,6 +8,7 @@ services=(
     "http://localhost:3002/health,Event Service" 
     "http://localhost:3003/health,Venue Service"
     "http://localhost:3004/health,Attendee Service"
+    "http://localhost:3005/health,Notification Service"
     "http://localhost:3000/health,API Gateway"
 )
 
