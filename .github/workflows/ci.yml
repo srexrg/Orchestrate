@@ -46,8 +46,8 @@ jobs:
         sleep 30
         
         echo "Testing service health..."
-        chmod +x ./check-services.sh
-        ./check-services.sh
+        chmod +x ./scripts/check-services.sh
+        ./scripts/check-services.sh
         
         echo "Cleanup..."
         docker compose down
