@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { UserRole } from '@prisma/client'
 import  {ApiError} from 'orchestrate-shared';
+import { publishUserRegisteredEvent } from '../rabbitmq/publisher';
 
 
 
@@ -76,6 +77,12 @@ export const register = async ({
     })
 
     const { accessToken, refreshToken } = await generateTokens(user.id, user.roles as UserRole[])
+
+    // Publish email notification for user registration
+    await publishUserRegisteredEvent({
+        name: user.name!,
+        email: user.email
+    });
 
     return {
         user,
