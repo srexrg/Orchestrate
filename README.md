@@ -53,6 +53,7 @@ Client Applications → API Gateway → Microservices → Databases
 ### Service Communication
 
 - **Synchronous**: HTTP/REST API calls through API Gateway
+- **Asynchronous**: Event-driven communication between services using RabbitMQ (e.g., for notifications)
 - **Authentication**: JWT token validation across services
 - **Database**: PostgreSQL with service-specific databases
 - **Network**: Docker internal networking with service discovery
@@ -62,10 +63,11 @@ Client Applications → API Gateway → Microservices → Databases
 | Service | Port | Database | Responsibility |
 |---------|------|----------|---------------|
 | **API Gateway** | 3000 | - | Request routing, authentication, rate limiting |
-| **Auth Service** | 3001 | auth_db (5433) | User management, JWT tokens, roles |
+| **Auth Service** | 3001 | auth_db (5433) | User management, JWT tokens, roles, event publishing |
 | **Event Service** | 3002 | event_db (5434) | Event CRUD, status management |
 | **Venue Service** | 3003 | venue_db (5435) | Venue management, capacity control |
 | **Attendee Service** | 3004 | attendee_db (5436) | Registration, ticket management |
+| **Notification Service** | N/A (Worker) | - | Consumes events (e.g., user registration) from RabbitMQ to send notifications (e.g., welcome emails) |
 
 ### Service Details
 
@@ -98,6 +100,12 @@ Client Applications → API Gateway → Microservices → Databases
 - Request/response logging
 - Rate limiting and security headers
 
+#### 📧 Notification Service
+- Consumes events published by other services via RabbitMQ.
+- Handles asynchronous tasks like sending email notifications.
+- Example: Sends welcome emails upon user registration events from the Auth Service.
+- Utilizes a topic exchange (`EMAIL_NOTIFICATIONS_EXCHANGE`) for flexible event routing.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -122,6 +130,8 @@ Client Applications → API Gateway → Microservices → Databases
    cp services/venue-service/.env.example services/venue-service/.env
    cp services/attendee-service/.env.example services/attendee-service/.env
    cp services/api-gateway/.env.example services/api-gateway/.env
+   # Add .env for notification-service if it requires specific env vars (e.g., for email service credentials)
+   # cp services/notification-service/.env.example services/notification-service/.env
    ```
 
 3. **Install dependencies**
@@ -178,6 +188,9 @@ Client Applications → API Gateway → Microservices → Databases
    
    # Terminal 5 - API Gateway
    cd services/api-gateway && npm run dev
+
+   # Terminal 6 - Notification Service (if running as a separate process)
+   # cd services/notification-service && npm run dev
    ```
 
 ## 💻 Development
@@ -187,10 +200,11 @@ Client Applications → API Gateway → Microservices → Databases
 ```
 orchestrate/
 ├── services/
-│   ├── auth-service/          # User authentication & authorization
+│   ├── auth-service/          # User authentication & authorization, event publishing
 │   ├── event-service/         # Event management & CRUD
 │   ├── venue-service/         # Venue management
 │   ├── attendee-service/      # Registration & ticket management
+│   ├── notification-service/  # Event consumption & notifications (e.g., email)
 │   └── api-gateway/           # Request routing & centralized auth
 ├── shared/                    # Common utilities, types & interfaces
 │   ├── types/                 # TypeScript interfaces & enums
@@ -211,6 +225,7 @@ npm run dev:event            # Start event service only
 npm run dev:venue            # Start venue service only
 npm run dev:attendee         # Start attendee service only
 npm run dev:gateway          # Start API gateway only
+npm run dev:notification     # Start notification service only
 npm run dev:all              # Start all services (with concurrently)
 
 # Docker
@@ -416,11 +431,11 @@ curl http://localhost:3002/health
 ## 🔮 Future Roadmap
 
 - 🎫 **Payment Integration** (Stripe/PayPal)
-- 📨 **Event-Driven Architecture** with Kafka
+- 📨 **Enhanced Event-Driven Capabilities** (e.g., exploring Kafka for high-throughput scenarios, dead-letter queue strategies for RabbitMQ)
 - ⚡ **Caching Layer** with Redis  
 - 📊 **Monitoring & Observability** (Prometheus, Grafana)
 - 🔍 **Search Service** with Elasticsearch
-- 📧 **Notification Service** (Email, SMS, Push)
+- 📧 **Expanded Notification Channels** (SMS, Push notifications, in-app)
 - 📱 **Mobile API** optimizations
 - 🧪 **Comprehensive Testing** suite
 - 🚀 **CI/CD Pipeline** with GitHub Actions
