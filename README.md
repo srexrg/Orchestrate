@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Orchestrate System Architecture](Screenshot%20from%202025-06-01%2020-44-51.png)
+![Orchestrate System Architecture](https://github.com/user-attachments/assets/ae71353b-c6fd-4950-a507-700bd3a7ab7a)
 
 *A modern, scalable microservices architecture for event management*
 
@@ -14,16 +14,6 @@
 
 </div>
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Services](#services)
-- [Getting Started](#getting-started)
-- [Development](#development)
-- [API Documentation](#api-documentation)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
 
 ## 🌟 Overview
 
